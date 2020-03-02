@@ -4,7 +4,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System;
 
-
 namespace SandBox
 {
     enum Operation { D, E }
