@@ -8,8 +8,6 @@ using static SandBox.SP;
 namespace SandBox
 {
     class SP {
-        public static string X { get; set; }
-        public static string k { get; set; }
         public static string GetBinaryStr(int num, int length)
         {
             return Convert.ToString(num, 2).PadLeft(length,'0');
@@ -41,7 +39,7 @@ namespace SandBox
             prt2 = source.Substring(step, source.Length - step);
             return prt2 + prt1;
         }
-        public static string GetY(string X)
+        public static string E(string X, string k)
         {
             string k_1, k_2, k_3;
             k_1 = GetStrByPos(k, new int[] { 10, 12, 2, 5, 8, 6, 9, 4 });
@@ -65,7 +63,6 @@ namespace SandBox
                 Console.WriteLine("X = " + X);
             }
             return X;
-
         }
     }
     class MyClass {
@@ -74,14 +71,14 @@ namespace SandBox
             try
             {
                 int N = 14;
-                X = GetBinaryStr(7 * N, 8);
-                Console.WriteLine("X = " + X);
                 int q = 4, r = 9;
-                k = GetBinaryStr(4096 - 11 * q * r, 12);
-                Console.WriteLine(k);
-                string Y = GetY(X);
+                string X = GetBinaryStr(7 * N, 8), 
+                    key = GetBinaryStr(4096 - 11 * q * r, 12);
+                Console.WriteLine("X = " + X);
+                Console.WriteLine(key);
+                E(X, key);
                 Console.WriteLine();
-                GetY("01100000");
+                E("01100000", key);
             }
             catch (Exception ex)
             {
