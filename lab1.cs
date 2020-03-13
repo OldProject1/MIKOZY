@@ -5,50 +5,44 @@ using System.Threading.Tasks;
 using System;
 
 namespace SandBox
-{
-    enum Operation { D, E }
-
+{ 
     abstract class Cipher
     {
         public const int m = 33;
         public string alphabet = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
         public string text;
-        public Cipher(string text) {
+        public Cipher(string text)
+        {
             this.text = text;
         }
-        public string DoOperation(Operation op)
-        {
-            if (op == Operation.D) { D(); }
-            else { E(); }
-            return text;
-        }
-        abstract public void D();
-        abstract public void E();
+        abstract public string D();
+        abstract public string E();
     }
 
     class Affine : Cipher
     {
         private readonly int a;
         private readonly int b;
-        public Affine(string text, int a = 31, int b = 25) : base (text)
+        public Affine(string text, int a = 31, int b = 25) : base(text)
         {
             if (a < 0 || b < 0) { throw new Exception(); }
             this.a = a;
             this.b = b;
         }
-        public override void D()
+        public override string D()
         {
-            int x, y, gcd = Gcd(a, m, out x,out y);
+            int x, y, gcd = Gcd(a, m, out x, out y);
             if (gcd != 1) { throw new Exception(); }
             int a_rev = x;
             string result = "";
             for (int i = 0; i < text.Length; i++)
             {
-                result += alphabet[a_rev *(alphabet.IndexOf(text[i]) - b + m) % m];
+                result += alphabet[a_rev * (alphabet.IndexOf(text[i]) - b + m) % m];
             }
             text = result;
+            return result;
         }
-        public override void E()
+        public override string E()
         {
             string result = "";
             for (int i = 0; i < text.Length; i++)
@@ -56,6 +50,7 @@ namespace SandBox
                 result += alphabet[(a * alphabet.IndexOf(text[i]) + b) % m];
             }
             text = result;
+            return result;
         }
         public int Gcd(int a, int b, out int x, out int y)
         {
@@ -95,8 +90,8 @@ namespace SandBox
                 key += rawKey[i];
                 i++; i = i % rawKey.Length;
             }
-        }   
-        public override void E()
+        }
+        public override string E()
         {
             string result = "";
             for (int i = 0; i < text.Length; i++)
@@ -104,8 +99,9 @@ namespace SandBox
                 result += alphabet[(alphabet.IndexOf(text[i]) + alphabet.IndexOf(key[i])) % m];
             }
             text = result;
+            return result;
         }
-        public override void D()
+        public override string D()
         {
             string result = "";
             for (int i = 0; i < text.Length; i++)
@@ -113,6 +109,7 @@ namespace SandBox
                 result += alphabet[(alphabet.IndexOf(text[i]) - alphabet.IndexOf(key[i]) + m) % m];
             }
             text = result;
+            return text;
         }
 
     }
@@ -125,12 +122,12 @@ namespace SandBox
             try
             {
                 Cipher cipher = new Affine("НАРУШЕНИЕ");
-                Console.WriteLine(cipher.DoOperation(Operation.E));
-                Console.WriteLine(cipher.DoOperation(Operation.D));
+                Console.WriteLine(cipher.E());
+                Console.WriteLine(cipher.D());
 
                 cipher = new Vijner("КУЙАНЬМТ", "КДЕФС");
-                Console.WriteLine(cipher.DoOperation(Operation.D));
-                Console.WriteLine(cipher.DoOperation(Operation.E));
+                Console.WriteLine(cipher.D());
+                Console.WriteLine(cipher.E());
             }
             catch (Exception ex)
             {
