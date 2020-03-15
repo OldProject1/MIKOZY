@@ -52,17 +52,13 @@ namespace SandBox
                 timer.Start();
 
                 string HexToBin(string hexStr) => Convert.ToString(Convert.ToInt32(hexStr, 16), 2);
-                //LFSR one = new LFSR(HexToBin("0x400062"), HexToBin("0x6DB8F9"));
-                //LFSR two = new LFSR(HexToBin("0x100000DF"), HexToBin("0x167EE042"));
-                //LFSR three = new LFSR(HexToBin("0x40000097"), HexToBin("0x55B7BC02"));
-
-                LFSR one = new LFSR(HexToBin("0x400051"), HexToBin("0x6980D6"));
-                LFSR two = new LFSR(HexToBin("0x100000C8"), HexToBin("0x1016FD2E"));
-                LFSR three = new LFSR(HexToBin("0x4000007F"), HexToBin("0x732DB497"));
-
+                LFSR one = new LFSR(HexToBin("0x400062"), HexToBin("0x6DB8F9"));
+                LFSR two = new LFSR(HexToBin("0x100000DF"), HexToBin("0x167EE042"));
+                LFSR three = new LFSR(HexToBin("0x40000097"), HexToBin("0x55B7BC02"));
+                
                 bool StrToBool(string str) => Convert.ToInt32(str) == 1;
                 bool IntToBool(int i) => i == 1;
-                int n = 32; //1250000
+                int n = 1250000 * 8 / 32;
 
                 string getGamma()
                 {
@@ -74,23 +70,25 @@ namespace SandBox
                     return Convert.ToInt32(part1() ^ part2()).ToString();
                 }
 
-                string gammaSeq = "";
-                for (int i = 0; i < n; i++)
+                int getGammaInt()
                 {
-                    gammaSeq += getGamma();
+                    string res = "";
+                    for (int i = 0; i < 32; i++)
+                    {
+                        res = getGamma() + res;
+                    }
+                    return Convert.ToInt32(res, 2);
                 }
+
                 string path = @"C:\Users\user\Desktop\result.txt";
                 File.WriteAllText(path, string.Empty);//but you can use: File.Delete(path);
                 //File.WriteAllText(path, gammaSeq);
                 using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.OpenOrCreate)))
                 {
-                    writer.Write(10);
-                    writer.Write(25);
-                    writer.Write(31);
-                    writer.Write(5235);
-                    writer.Write(2);
-                    writer.Write(512);
-
+                    for (int i = 0; i < n; i++)
+                    {
+                        writer.Write(getGammaInt());
+                    }
                 }
 
                 timer.Stop();
