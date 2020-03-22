@@ -5,9 +5,13 @@ using System.Threading.Tasks;
 using System.Numerics;
 using System;
 
+using static SandBox.GCD;
+using static SandBox.RSA;
+
+
 namespace SandBox
 {
-    class GCD
+    static class GCD
     {
         public static BigInteger Gcd(BigInteger a, BigInteger b, out BigInteger x, out BigInteger y)
         {
@@ -35,25 +39,21 @@ namespace SandBox
             return gcd;
         }
     }
-    class RSA
+    static class RSA
     {
-        public BigInteger n;
-        public BigInteger fi;
-        public BigInteger d;
-        public BigInteger Gen(BigInteger p ,BigInteger q, BigInteger e)
+        public static BigInteger n;
+        public static BigInteger d;
+        public static BigInteger Gen(BigInteger p, BigInteger q, BigInteger e)
         {
             n = p * q;
-            Console.WriteLine($"n = {n}");
-            fi = (p - 1) * (q - 1);
-            Console.WriteLine($"fi = {fi}");
+            BigInteger fi = (p - 1) * (q - 1);
             BigInteger helpVar;
-            BigInteger gcd = GCD.Gcd(e, fi, out d, out helpVar);//e^(-1) (mod fi) == d
-            if (gcd != 1){ throw new Exception(); }
-            d = (d%fi + fi) % fi;
-            Console.WriteLine($"d = {d}");
+            BigInteger gcd = Gcd(e, fi, out d, out helpVar);//e^(-1) (mod fi) == d
+            if (gcd != 1) { throw new Exception(); }
+            d = (d % fi + fi) % fi;
             return d;
         }
-        BigInteger binpow(BigInteger a, BigInteger m)
+        static BigInteger binpow(BigInteger a, BigInteger m)
         {
             BigInteger res = 1;
             while (m != 0)
@@ -69,27 +69,26 @@ namespace SandBox
                 }
             return res;
         }
-        public BigInteger Encr(BigInteger X, BigInteger e, BigInteger n)
+        public static BigInteger Encr(BigInteger X, BigInteger e, BigInteger n)
         {
             if (X >= n) { throw new Exception(); }
             return binpow(X, e) % n;
         }
-        public BigInteger Encr(BigInteger X, BigInteger e)
+        public static BigInteger Encr(BigInteger X, BigInteger e)
         {
             if (X >= n) { throw new Exception(); }
             return binpow(X, e) % n;
         }
-        public BigInteger Decr(BigInteger Y, BigInteger d, BigInteger n)
+        public static BigInteger Decr(BigInteger Y, BigInteger d, BigInteger n)
         {
             if (Y >= n) { throw new Exception(); }
             return binpow(Y, d) % n;
         }
-        public BigInteger Decr(BigInteger Y)
+        public static BigInteger Decr(BigInteger Y, BigInteger d)
         {
             if (Y >= n) { throw new Exception(); }
             return binpow(Y, d) % n;
         }
-
     }
     class MyClass
     {
@@ -97,26 +96,42 @@ namespace SandBox
         {
             try
             {
-
                 Console.OutputEncoding = Encoding.UTF8;
                 BigInteger
                     p = 804288300171659,
                     q = 819139104388459,
                     e = BigInteger.Parse("587862009679843002844824189377"),
-                    X1 = BigInteger.Parse("201229993267158788910642144722"),
-                    Y2 = BigInteger.Parse("474981332560572636448191786787");
-                RSA rsa = new RSA();
-                rsa.Gen(p, q, e);
-                var encrMsg = rsa.Encr(X1, e);
-                var decrMsg = rsa.Decr(Y2, rsa.d, e);
-
-
-                Console.WriteLine(encrMsg);
-                Console.WriteLine(rsa.Decr(encrMsg));
-                
+                    X1 = BigInteger.Parse("201229993267158788910642144722"), Y1, 
+                    Y2 = BigInteger.Parse("474981332560572636448191786787"), X2;
+                bool isContinued = true;
+                while(isContinued)
+                {
+                    Console.WriteLine("choose operation: ");
+                    Console.WriteLine("1) Gen      2) Encr     3) Decr     4) Exit");
+                    int op = Convert.ToInt32(Console.ReadLine());
+                    switch (op)
+                    {
+                        case 1:
+                            Gen(p, q, e);
+                            Console.WriteLine($"d = {d}");
+                            break;
+                        case 2:
+                            Y1 = Encr(X1, e);
+                            Console.WriteLine($"Y1 = {Y1}");
+                            break;
+                        case 3:
+                            X2 = Decr(Y2, d);
+                            Console.WriteLine($"X2 = {X2}");
+                            break;
+                        case 4:
+                            isContinued = false;
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); }
         }
     }
 }
-
